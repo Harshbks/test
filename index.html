@@ -208,9 +208,8 @@
 
     <script>
         /* =========================================
-           1. AUTHENTICATION (ROLL NO) & GOOGLE SHEET CONNECTION
+           1. AUTHENTICATION & GOOGLE SHEET CONNECTION
            ========================================= */
-        
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
 
         // CONFIG: Sheet Column Numbers
@@ -218,17 +217,16 @@
         const NAME_COL_INDEX = 1;   // Column B = Name
         const EMAIL_COL_INDEX = 2;  // Column C = Email
 
-        let loggedInUser = ""; // Will store the Roll Number
+        let loggedInUser = "";
 
         async function loginStudent() {
             const rollInput = document.getElementById('kiitRoll');
             const status = document.getElementById('loginStatus');
             const btn = document.querySelector('#roll-step button');
 
-            // 1. Clean the input (Roll Number)
+            // 1. INPUT HANDLING
             const roll = rollInput.value.trim();
 
-            // 2. BASIC VALIDATION (Check if empty)
             if (roll.length < 3) {
                 status.innerHTML = "<i class='fa-solid fa-circle-exclamation'></i> Please enter a valid Roll Number.";
                 status.style.color = "var(--error-color)";
@@ -236,15 +234,20 @@
                 return;
             }
 
-            // 3. SHOW LOADING
+            // 2. SHOW LOADING
             btn.innerHTML = "Verifying...";
             btn.disabled = true;
 
             try {
-                // 4. FETCH DATA
-                const studentData = await getStudentDataFromSheet(roll);
+                // 3. FETCH DATA (BUT DON'T BLOCK LOGIN IF NOT FOUND)
+                let studentData = null;
+                try {
+                    studentData = await getStudentDataFromSheet(roll);
+                } catch (e) {
+                    console.log("Fetch failed, logging in offline mode");
+                }
 
-                // 5. LOGIN SUCCESS (We allow login regardless, but status changes)
+                // 4. ALWAYS LOGIN SUCCESS
                 loggedInUser = roll;
                 
                 // Switch UI
@@ -272,11 +275,14 @@
                 }
 
             } catch (error) {
-                console.error(error);
-                status.innerHTML = "Verification failed. Check internet connection.";
-                status.style.color = "var(--error-color)";
-                btn.innerHTML = "Login";
-                btn.disabled = false;
+                console.error("Critical error:", error);
+                // Even on critical error, let them in as unverified
+                loggedInUser = roll;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                document.getElementById('p-name').innerText = "Student";
+                document.getElementById('p-status').innerText = "Offline ❌";
+                document.getElementById('p-status').style.color = "var(--error-color)";
             }
         }
 
@@ -284,22 +290,13 @@
             try {
                 const response = await fetch(CSV_URL);
                 const text = await response.text();
-                
-                // Parse CSV text
                 const rows = text.split('\n').map(row => row.split(','));
 
-                // Loop through rows
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
-                    
-                    // Safety check for row length
                     if(row.length > Math.max(ROLL_COL_INDEX, NAME_COL_INDEX, EMAIL_COL_INDEX)) {
-                        
-                        // Clean data (remove quotes, trim spaces)
                         const sheetRoll = row[ROLL_COL_INDEX].replace(/"/g, '').trim();
-                        
                         if (sheetRoll === inputRoll) {
-                            // Match Found -> Return Object
                             return {
                                 name: row[NAME_COL_INDEX].replace(/"/g, '').trim(),
                                 email: row[EMAIL_COL_INDEX].replace(/"/g, '').trim()
@@ -307,12 +304,8 @@
                         }
                     }
                 }
-                
-                // Match NOT Found
                 return null; 
-
             } catch (err) {
-                console.error("Fetch error:", err);
                 throw err;
             }
         }
@@ -330,6 +323,7 @@
             document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
         }
 
+        // ... DATABASE ...
         const teacherDatabase = [
 { id: 1, name: "Shubhasri Kundu", image: "https://i.ibb.co/svbpFypW/kundu.jpg", subject: "IND4.O", email: "shubhasri.kundufel@kiit.ac.in", phone: "8280311924", department: "ELECTRICAL", seed: "shubhasri", social: "https://www.facebook.com/angel.su.10048" },
 { id: 2, name: "Rachita Panda", image: "https://i.ibb.co/zTZ6xygP/Screenshot-2025-12-13-005439.png", subject: "STW", email: "rachita.pandafce@kiit.ac.in", phone: "9658978785", department: "CIVIL", seed: "rachita", social: "https://www.facebook.com/rachita.panda.31" },
