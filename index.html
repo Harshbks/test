@@ -70,7 +70,7 @@
         .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
         
         .profile-details { text-align: left; margin-top: 1rem; }
-        .profile-row { padding: 0.8rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; }
+        .profile-row { padding: 0.8rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .search-header { text-align: center; margin-bottom: 3rem; }
         .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; display: flex; gap: 1rem; align-items: stretch; }
         .search-input-wrapper { position: relative; flex-grow: 1; }
@@ -124,6 +124,21 @@
             font-weight: 500;
             opacity: 0.7;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        /* Insta Link Style */
+        .insta-contact-link {
+            color: #E1306C;
+            text-decoration: none;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        .insta-contact-link:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -185,12 +200,19 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
             </div>
+            
             <div class="profile-details">
                 <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
-                <div class="profile-row"><span style="opacity:0.7">Roll No</span><span id="p-roll" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
+                
+                <div class="profile-row" style="border-bottom: none; margin-top: 15px; justify-content: center; padding-bottom: 0;">
+                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link">
+                        <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
+                    </a>
+                </div>
             </div>
+            
             <button class="submit-btn" style="background: var(--error-color);" onclick="location.reload()">Logout</button>
         </div>
     </div>
@@ -240,7 +262,7 @@
             btn.disabled = true;
 
             try {
-                // 3. FETCH DATA (BUT DON'T BLOCK LOGIN IF NOT FOUND)
+                // 3. FETCH DATA
                 let studentData = null;
                 try {
                     studentData = await getStudentDataFromSheet(roll);
@@ -248,15 +270,14 @@
                     console.log("Fetch failed, logging in offline mode");
                 }
 
-                // 4. ALWAYS LOGIN SUCCESS (If format is valid)
+                // 4. ALWAYS LOGIN SUCCESS
                 loggedInUser = roll;
                 
                 // Switch UI
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 
-                // Set Profile Data
-                document.getElementById('p-roll').innerText = loggedInUser;
+                // Set Profile Data (Roll number variable used for logic, but not shown in profile anymore)
                 const statusEl = document.getElementById('p-status');
 
                 if (studentData) {
