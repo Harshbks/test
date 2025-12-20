@@ -189,7 +189,7 @@
                 <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Roll No</span><span id="p-roll" style="font-weight:600"></span></div>
-                <div class="profile-row"><span style="opacity:0.7">Status</span><span style="color: var(--success-color); font-weight:600">Verified ✅</span></div>
+                <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
             </div>
             <button class="submit-btn" style="background: var(--error-color);" onclick="location.reload()">Logout</button>
         </div>
@@ -211,11 +211,9 @@
            1. AUTHENTICATION & GOOGLE SHEET CONNECTION
            ========================================= */
         
-        // YOUR PUBLIC CSV LINK
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
 
         // IMPORTANT: Set which column numbers have Name and Email in your Excel/Sheet
-        // 0 means Column A, 1 means Column B, 2 means Column C, etc.
         const NAME_COL_INDEX = 0;   // Assumes Name is in first column (A)
         const EMAIL_COL_INDEX = 1;  // Assumes Email is in second column (B)
 
@@ -253,9 +251,22 @@
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 
                 // Set Profile Data
-                document.getElementById('p-name').innerText = fetchedName;
                 document.getElementById('p-email').innerText = loggedInUser;
                 document.getElementById('p-roll').innerText = loggedInUser.split('@')[0];
+
+                const statusEl = document.getElementById('p-status');
+                
+                if (fetchedName) {
+                    // VERIFIED USER
+                    document.getElementById('p-name').innerText = fetchedName;
+                    statusEl.innerText = "Verified ✅";
+                    statusEl.style.color = "var(--success-color)";
+                } else {
+                    // UNVERIFIED USER (Valid email, but not in sheet)
+                    document.getElementById('p-name').innerText = "Student";
+                    statusEl.innerText = "Not Verified ❌";
+                    statusEl.style.color = "var(--error-color)";
+                }
 
             } catch (error) {
                 console.error(error);
@@ -278,26 +289,22 @@
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
                     
-                    // Check if row has enough columns
                     if(row.length > Math.max(NAME_COL_INDEX, EMAIL_COL_INDEX)) {
-                        
-                        // Clean data (remove quotes, trim spaces)
-                        // If CSV puts email in quotes like "user@kiit.ac.in", we remove them
                         const sheetEmail = row[EMAIL_COL_INDEX].replace(/"/g, '').trim().toLowerCase();
                         
                         if (sheetEmail === studentEmail) {
-                            // Found match! Return the Name
+                            // Match Found -> Return the Name
                             return row[NAME_COL_INDEX].replace(/"/g, '').trim(); 
                         }
                     }
                 }
                 
-                // Default if email valid but not in sheet
-                return "Student"; 
+                // Match NOT Found -> Return null
+                return null; 
 
             } catch (err) {
                 console.error("Fetch error:", err);
-                throw err; // Pass error up to loginStudent
+                throw err;
             }
         }
 
