@@ -227,8 +227,9 @@
             // 1. INPUT HANDLING
             const roll = rollInput.value.trim();
 
-            if (roll.length < 3) {
-                status.innerHTML = "<i class='fa-solid fa-circle-exclamation'></i> Please enter a valid Roll Number.";
+            // VALIDATION: Must be at least 5 digits
+            if (roll.length < 5) {
+                status.innerHTML = "<i class='fa-solid fa-circle-exclamation'></i> Please enter a valid Roll Number (at least 5 digits).";
                 status.style.color = "var(--error-color)";
                 rollInput.style.border = "1px solid var(--error-color)";
                 return;
@@ -247,7 +248,7 @@
                     console.log("Fetch failed, logging in offline mode");
                 }
 
-                // 4. ALWAYS LOGIN SUCCESS
+                // 4. ALWAYS LOGIN SUCCESS (If format is valid)
                 loggedInUser = roll;
                 
                 // Switch UI
@@ -323,7 +324,6 @@
             document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
         }
 
-        // ... DATABASE ...
         const teacherDatabase = [
 { id: 1, name: "Shubhasri Kundu", image: "https://i.ibb.co/svbpFypW/kundu.jpg", subject: "IND4.O", email: "shubhasri.kundufel@kiit.ac.in", phone: "8280311924", department: "ELECTRICAL", seed: "shubhasri", social: "https://www.facebook.com/angel.su.10048" },
 { id: 2, name: "Rachita Panda", image: "https://i.ibb.co/zTZ6xygP/Screenshot-2025-12-13-005439.png", subject: "STW", email: "rachita.pandafce@kiit.ac.in", phone: "9658978785", department: "CIVIL", seed: "rachita", social: "https://www.facebook.com/rachita.panda.31" },
