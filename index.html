@@ -195,61 +195,88 @@
         </div>
     </div>
 
-    <script>
+        <script>
         /* =========================================
-           1. AUTHENTICATION (SHEET DB)
+           1. AUTHENTICATION & GOOGLE SHEET CONNECTION
            ========================================= */
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
-        
+
+        // CONFIG: Sheet Column Numbers
+        const ROLL_COL_INDEX = 0;   // Column A = Roll
+        const NAME_COL_INDEX = 1;   // Column B = Name
+        const EMAIL_COL_INDEX = 2;  // Column C = Email
+
         let loggedInUser = "";
-        let isVerifiedUser = false;
+        let isVerifiedUser = false; // Flag to track status
 
         async function loginStudent() {
             const rollInput = document.getElementById('kiitRoll');
             const status = document.getElementById('loginStatus');
             const btn = document.querySelector('#roll-step button');
+
+            // 1. INPUT HANDLING
             const roll = rollInput.value.trim();
 
+            // VALIDATION: Must be at least 5 digits
             if (roll.length < 5) {
-                status.innerHTML = "Please enter a valid Roll Number.";
+                status.innerHTML = "<i class='fa-solid fa-circle-exclamation'></i> Please enter a valid Roll Number (at least 5 digits).";
+                status.style.color = "var(--error-color)";
+                rollInput.style.border = "1px solid var(--error-color)";
                 return;
             }
 
+            // 2. SHOW LOADING
             btn.innerHTML = "Verifying...";
             btn.disabled = true;
 
             try {
-                let studentData = await getStudentDataFromSheet(roll);
-                
-                // Allow login regardless, but flag if verified or offline
+                // 3. FETCH DATA
+                let studentData = null;
+                try {
+                    studentData = await getStudentDataFromSheet(roll);
+                } catch (e) {
+                    console.log("Fetch failed, logging in offline mode");
+                }
+
+                // 4. ALWAYS LOGIN SUCCESS
                 loggedInUser = roll;
+                
+                // Switch UI
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 
+                // Set Profile Data
                 const statusEl = document.getElementById('p-status');
 
                 if (studentData) {
+                    // FOUND IN SHEET -> VERIFIED
                     document.getElementById('p-name').innerText = studentData.name;
                     document.getElementById('p-email').innerText = studentData.email;
+                    
                     statusEl.innerText = "Verified ✅";
                     statusEl.style.color = "var(--success-color)";
-                    isVerifiedUser = true;
+                    isVerifiedUser = true; // Enable reviews
                 } else {
+                    // NOT FOUND -> NOT VERIFIED
                     document.getElementById('p-name').innerText = "Student";
                     document.getElementById('p-email').innerText = "N/A";
+                    
                     statusEl.innerText = "Not Verified ❌";
                     statusEl.style.color = "var(--error-color)";
-                    isVerifiedUser = false;
+                    isVerifiedUser = false; // Disable reviews
                 }
+
             } catch (error) {
-                console.error("Login Error:", error);
+                console.error("Critical error:", error);
                 loggedInUser = roll;
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
+                document.getElementById('p-name').innerText = "Student";
+                document.getElementById('p-status').innerText = "Offline ❌";
+                document.getElementById('p-status').style.color = "var(--error-color)";
                 isVerifiedUser = false;
             }
         }
-
         async function getStudentDataFromSheet(inputRoll) {
             try {
                 const response = await fetch(CSV_URL);
