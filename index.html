@@ -210,7 +210,7 @@
                     </a>
                 </div>
             </div>
-            <button class="submit-btn" style="background: var(--error-color);" onclick="location.reload()">Logout</button>
+            <button class="submit-btn" style="background: var(--error-color);" onclick="logoutStudent()">Logout</button>
         </div>
     </div>
 
@@ -230,14 +230,35 @@
            1. AUTHENTICATION & GOOGLE SHEET CONNECTION
            ========================================= */
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
-
-        // CONFIG: Sheet Column Numbers
-        const ROLL_COL_INDEX = 0;   // Column A = Roll
-        const NAME_COL_INDEX = 1;   // Column B = Name
-        const EMAIL_COL_INDEX = 2;  // Column C = Email
+        const STORAGE_KEY = 'kiit_user_session'; // Key for Local Storage
 
         let loggedInUser = "";
         let isVerifiedUser = false; // Flag to track status
+
+        // --- NEW: CHECK SESSION ON LOAD ---
+        window.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+        });
+
+        function checkSession() {
+            const storedSession = localStorage.getItem(STORAGE_KEY);
+            if (storedSession) {
+                try {
+                    const userData = JSON.parse(storedSession);
+                    console.log("Restoring session for:", userData.roll);
+                    
+                    // Restore Global Variables
+                    loggedInUser = userData.roll;
+                    isVerifiedUser = userData.isVerified;
+
+                    // Update UI (Skip Login Screen)
+                    updateDashboardUI(userData.name, userData.email, userData.isVerified);
+                } catch (e) {
+                    console.error("Session parse error", e);
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+        }
 
         async function loginStudent() {
             const rollInput = document.getElementById('kiitRoll');
@@ -268,45 +289,80 @@
                     console.log("Fetch failed, logging in offline mode");
                 }
 
-                // 4. ALWAYS LOGIN SUCCESS
+                // 4. PREPARE USER DATA
                 loggedInUser = roll;
-                
-                // Switch UI
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                
-                // Set Profile Data
-                const statusEl = document.getElementById('p-status');
+                let sessionData = {};
 
                 if (studentData) {
                     // FOUND IN SHEET -> VERIFIED
-                    document.getElementById('p-name').innerText = studentData.name;
-                    document.getElementById('p-email').innerText = studentData.email;
-                    
-                    statusEl.innerText = "Verified ✅";
-                    statusEl.style.color = "var(--success-color)";
-                    isVerifiedUser = true; // Enable reviews
+                    isVerifiedUser = true;
+                    sessionData = {
+                        roll: roll,
+                        name: studentData.name,
+                        email: studentData.email,
+                        isVerified: true
+                    };
                 } else {
                     // NOT FOUND -> NOT VERIFIED
-                    document.getElementById('p-name').innerText = "Student";
-                    document.getElementById('p-email').innerText = "N/A";
-                    
-                    statusEl.innerText = "Not Verified ❌";
-                    statusEl.style.color = "var(--error-color)";
-                    isVerifiedUser = false; // Disable reviews
+                    isVerifiedUser = false;
+                    sessionData = {
+                        roll: roll,
+                        name: "Student",
+                        email: "N/A",
+                        isVerified: false
+                    };
                 }
+
+                // --- NEW: SAVE TO LOCAL STORAGE ---
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+
+                // 5. UPDATE UI
+                updateDashboardUI(sessionData.name, sessionData.email, sessionData.isVerified);
 
             } catch (error) {
                 console.error("Critical error:", error);
+                // Offline Fallback
                 loggedInUser = roll;
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                document.getElementById('p-name').innerText = "Student";
-                document.getElementById('p-status').innerText = "Offline ❌";
-                document.getElementById('p-status').style.color = "var(--error-color)";
                 isVerifiedUser = false;
+                
+                const offlineData = {
+                    roll: roll,
+                    name: "Student",
+                    email: "N/A",
+                    isVerified: false
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(offlineData));
+                updateDashboardUI("Student", "N/A", false);
             }
         }
+
+        function updateDashboardUI(name, email, isVerified) {
+            // Switch Screens
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            
+            // Set Profile Data
+            document.getElementById('p-name').innerText = name;
+            document.getElementById('p-email').innerText = email;
+            const statusEl = document.getElementById('p-status');
+
+            if (isVerified) {
+                statusEl.innerText = "Verified ✅";
+                statusEl.style.color = "var(--success-color)";
+            } else {
+                statusEl.innerText = "Not Verified ❌";
+                statusEl.style.color = "var(--error-color)";
+            }
+        }
+
+        // --- NEW: LOGOUT FUNCTION ---
+        function logoutStudent() {
+            // Clear Storage
+            localStorage.removeItem(STORAGE_KEY);
+            // Refresh to show login screen
+            location.reload();
+        }
+
         async function getStudentDataFromSheet(inputRoll) {
             try {
                 const response = await fetch(CSV_URL);
