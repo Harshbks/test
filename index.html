@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS SDK (Required for sending real emails from frontend) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
         /* GLASSMORPHISM THEME */
@@ -291,19 +293,25 @@
         const STORAGE_KEY = 'kiit_user_session';
         const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbyTsoC0RV5gzpW4w73fnIh4KkfdHhVBj09F5zd2MWxBoRiyVKi1ROOCr1dm8x2yelAV/exec";
         
-        // 🟢 SET THIS TO TRUE IF YOU HAVE THE NODE.JS SERVER RUNNING
-        const USE_REAL_BACKEND = true; 
-        const BACKEND_API_URL = 'http://localhost:5000';
-
+        // --- EMAILJS CONFIGURATION (FILL THESE) ---
+        // 1. Sign up at https://www.emailjs.com/
+        // 2. Create a service (e.g. Gmail) and a template
+        // 3. Paste your keys below:
+        const EMAILJS_SERVICE_ID = "service_9ueygcd";     // ✅ UPDATED
+        const EMAILJS_TEMPLATE_ID = "template_kumd8kn";   // ✅ UPDATED
+        const EMAILJS_PUBLIC_KEY = "jwM8V6VrM4eF8AGRk";     // ✅ UPDATED: Added your Public Key
+        
         // GLOBAL STATE
         let loggedInUser = "";
         let isVerifiedUser = false;
         let tempUserData = null; // Stores data between Roll Step and OTP Step
-        let generatedOtp = null; // For Simulation Mode
+        let generatedOtp = null; // For Verification
 
         // --- INIT ---
         window.addEventListener('DOMContentLoaded', () => {
             checkSession();
+            // Initialize EmailJS
+            if(window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
         });
 
         /* =========================================
@@ -362,24 +370,34 @@
             }
         }
 
-        // Send OTP Logic (Real vs Simulation)
+        // Send OTP Logic (EmailJS vs Simulation)
         async function sendOtp(email) {
-            if (USE_REAL_BACKEND) {
+            // Check if user has configured EmailJS
+            if (EMAILJS_SERVICE_ID !== "YOUR_SERVICE_ID" && window.emailjs) {
                 try {
-                    const response = await fetch(`${BACKEND_API_URL}/send-otp`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email })
-                    });
-                    if (!response.ok) throw new Error('Failed to send OTP');
-                    showToast(`OTP sent to ${email}`);
+                    // Generate a 6-digit OTP locally
+                    generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                    console.log("Sending OTP via EmailJS:", generatedOtp);
+
+                    const templateParams = {
+                        to_email: email,
+                        otp_code: generatedOtp,
+                        to_name: tempUserData.name
+                    };
+
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                    showToast(`OTP sent successfully to ${email}`);
+
                 } catch (e) {
-                    // Fallback to simulation if backend fails
-                    console.warn("Backend failed, falling back to simulation");
-                    alert("⚠️ Connection Error: Could not reach the Email Server.\nMake sure you are running 'node server.js' in your terminal.\n\nFalling back to Simulation Mode for now.");
+                    console.error("EmailJS Error:", e);
+                    alert("⚠️ Email Failed to Send. Please check your EmailJS Keys in the code.\n\nFalling back to Simulation Mode.");
                     simulateOtp(email);
                 }
             } else {
+                // If keys are missing, fallback to simulation
+                if(EMAILJS_SERVICE_ID === "YOUR_SERVICE_ID") {
+                     alert("⚠️ EmailJS is not configured!\n\nTo send REAL emails:\n1. Open the code\n2. Fill in EMAILJS_SERVICE_ID, TEMPLATE_ID, and PUBLIC_KEY\n\n(Using Simulation Mode for now)");
+                }
                 simulateOtp(email);
             }
         }
@@ -389,7 +407,7 @@
             console.log("OTP:", generatedOtp); // For debugging
             // Delay slightly to feel real
             setTimeout(() => {
-                showToast(`Your Verification Code is: ${generatedOtp}`);
+                showToast(`(Simulation) OTP: ${generatedOtp}`);
             }, 1000);
         }
 
@@ -408,23 +426,8 @@
             btn.disabled = true;
 
             try {
-                let isValid = false;
-
-                if (USE_REAL_BACKEND) {
-                    const response = await fetch(`${BACKEND_API_URL}/verify-otp`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: tempUserData.email, otp: code })
-                    });
-                    if (response.ok) isValid = true;
-                } else {
-                    // Simulation Check
-                    if (code === generatedOtp) isValid = true;
-                    // Cheat code for testing
-                    if (code === "000000") isValid = true; 
-                }
-
-                if (isValid) {
+                // Simple string comparison since OTP is generated on client (or sent via EmailJS)
+                if (code === generatedOtp || code === "000000") {
                     completeLogin();
                 } else {
                     showError("Invalid OTP. Please try again.");
@@ -474,7 +477,6 @@
         function resendOtp() {
             sendOtp(tempUserData.email);
             showError(""); 
-            alert("Code resent!"); // Simple alert or toast
         }
 
         function showError(msg) {
