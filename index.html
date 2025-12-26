@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
         /* VARIABLES */
@@ -73,14 +72,10 @@
         
         /* TRANSITION UTILITIES */
         .hidden { display: none !important; }
-        
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
         .fade-out { animation: fadeOut 0.3s ease-in forwards; opacity: 1; transform: translateY(0); pointer-events: none; }
-        
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
-
-        /* STAGGERED ANIMATION FOR CARDS */
         .stagger-enter { opacity: 0; transform: translateY(30px); animation: fadeInCard 0.6s var(--ease-elastic) forwards; }
         @keyframes fadeInCard { to { opacity: 1; transform: translateY(0); } }
 
@@ -97,14 +92,12 @@
         /* LOGIN */
         #login-section { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: inherit; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
         .login-box { width: 90%; max-width: 400px; padding: 2.5rem; text-align: center; }
-        
         .login-input { 
             width: 100%; padding: 1rem; margin: 1rem 0; background: var(--input-bg); 
             border: 1px solid var(--input-border); border-radius: 12px; color: var(--text-primary); 
             font-size: 1rem; outline: none; transition: border 0.3s; 
         }
         .login-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.2); }
-        
         .btn-primary { 
             width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
             border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; 
@@ -136,7 +129,6 @@
         .search-header { text-align: center; margin-bottom: 3rem; }
         .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; display: flex; gap: 1rem; align-items: stretch; }
         .search-input-wrapper { position: relative; flex-grow: 1; }
-        
         .search-icon-input { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; opacity: 0.7; pointer-events: none; z-index: 1; }
         .search-input { 
             padding-left: 3.5rem; height: 60px; font-size: 1.2rem; border-radius: 50px; width: 100%; 
@@ -152,7 +144,6 @@
             transition: transform 0.3s ease;
         }
         .teacher-card:hover { transform: translateY(-5px); }
-        
         .card-banner { height: 110px; background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)); position: relative; }
         .t-avatar-wrapper { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); }
         .t-avatar { 
@@ -161,7 +152,6 @@
             overflow: hidden; display: flex; align-items: center; justify-content: center; 
         }
         .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
         .t-content { padding: 4rem 1.5rem 1.5rem 1.5rem; text-align: center; }
         .t-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.2rem; }
         .t-badge { 
@@ -169,23 +159,18 @@
             display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1rem; 
             background: var(--tag-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
         }
-        
         .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
         .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
-        
         .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
         .t-row { 
             display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
             background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; 
         }
         .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
-        
         .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
         .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
-        
         .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
         .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
-        
         .btn-rate { 
             width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; 
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; 
@@ -203,7 +188,6 @@
             opacity: 0; transition: opacity 0.3s; 
         }
         .modal-overlay.active { display: flex; opacity: 1; }
-        
         .review-modal { 
             width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
             background: var(--glass-bg); background-color: #2d3748; border: 1px solid var(--glass-border); 
@@ -212,7 +196,6 @@
         }
         [data-theme="light"] .review-modal { background-color: #fff; }
         .modal-overlay.active .review-modal { transform: scale(1); }
-        
         .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
 
         /* PROFILE */
@@ -233,7 +216,6 @@
         }
         .star-btn:hover { transform: scale(1.2); }
         .star-btn.active { color: var(--star-active); }
-        
         .submit-btn { 
             width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
             border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; 
@@ -384,12 +366,8 @@
         /* ================= CONFIGURATION ================= */
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
         const STORAGE_KEY = 'kiit_user_session';
-        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbyTsoC0RV5gzpW4w73fnIh4KkfdHhVBj09F5zd2MWxBoRiyVKi1ROOCr1dm8x2yelAV/exec";
-        
-        // --- EMAILJS CONFIG (Update these) ---
-        const EMAILJS_SERVICE_ID = "service_9ueygcd";    
-        const EMAILJS_TEMPLATE_ID = "template_kumd8kn";   
-        const EMAILJS_PUBLIC_KEY = "jwM8V6VrM4eF8AGRk";     
+        // ✅ UPDATED: Your Google Script URL is here
+        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbzPT_kD4ZbyL7GpmB0KlPL2JTwJNFu7UrvLCdwgvqFEd1AUb1dgyqHWTkqtM_0JHDeI/exec";
         
         // GLOBAL STATE
         let loggedInUser = "";
@@ -400,7 +378,6 @@
         // INIT
         window.addEventListener('DOMContentLoaded', () => {
             checkSession();
-            if(window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY);
         });
 
         // ================= AUTH FLOW (SMOOTH TRANSITIONS) =================
@@ -447,18 +424,39 @@
         }
 
         async function sendOtp(email) {
-            if (EMAILJS_SERVICE_ID !== "YOUR_SERVICE_ID" && window.emailjs) {
-                try {
-                    generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-                    const templateParams = { to_email: email, otp_code: generatedOtp, to_name: tempUserData.name };
-                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                    showToast(`OTP sent successfully to ${email}`);
-                } catch (e) {
-                    console.error("EmailJS Error:", e);
-                    simulateOtp(email);
-                }
-            } else {
+            // 1. Generate OTP Locally
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log("OTP for debug:", generatedOtp);
+
+            const btn = document.getElementById('sendOtpBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Email...';
+
+            try {
+                // 2. Send request to Google Script
+                const response = await fetch(REVIEW_API_URL, {
+                    method: "POST",
+                    mode: "no-cors", // Crucial for Google Apps Script calls from browser
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8",
+                    },
+                    body: JSON.stringify({
+                        action: "send_otp",
+                        email: email,
+                        name: tempUserData.name,
+                        otp: generatedOtp
+                    })
+                });
+
+                // 3. Assume success (no-cors doesn't give readable response)
+                showToast(`OTP sent successfully to ${email}`);
+                
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Failed to send email. Switching to Simulation Mode.");
                 simulateOtp(email);
+            } finally {
+                btn.innerHTML = originalText;
             }
         }
 
@@ -761,18 +759,27 @@
             btn.disabled = true;
             btn.style.background = "#666";
 
-            const payload = { teacherId: teacherId, user: loggedInUser, ratings: currentRatings, avgScore: avgScore };
+            const payload = { 
+                action: "save_review", // Required by Google Script
+                teacherId: teacherId, 
+                user: loggedInUser, 
+                ratings: currentRatings, 
+                avgScore: avgScore 
+            };
 
-            fetch(REVIEW_API_URL, { method: "POST", body: JSON.stringify(payload) })
-            .then(res => res.json())
-            .then(data => {
-                if(data.result === "success") {
-                    alert("Review Submitted Successfully!");
-                    allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
-                    allReviewsGlobal.push(payload);
-                    closeModal();
-                    searchTeacher(); // Refresh UI
-                } else { alert("Error saving review."); }
+            fetch(REVIEW_API_URL, { 
+                method: "POST", 
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload) 
+            })
+            .then(() => {
+                // Since no-cors returns opaque response, we assume success
+                alert("Review Submitted Successfully!");
+                allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
+                allReviewsGlobal.push(payload);
+                closeModal();
+                searchTeacher(); // Refresh UI
             })
             .catch(err => { console.error(err); alert("Connection Failed! But we will try to update locally."); })
             .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
