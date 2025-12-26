@@ -84,7 +84,7 @@
         .stagger-enter { opacity: 0; transform: translateY(30px); animation: fadeInCard 0.6s var(--ease-elastic) forwards; }
         @keyframes fadeInCard { to { opacity: 1; transform: translateY(0); } }
 
-        /* NAVBAR - RESTORED TO ORIGINAL */
+        /* NAVBAR */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 2rem; }
         .nav-controls { display: flex; gap: 1rem; align-items: center; }
         .icon-btn { 
@@ -315,7 +315,8 @@
 
     <div id="dashboard-section" class="container hidden">
         <div class="navbar">
-            <div class="nav-brand"></div> <div class="nav-controls">
+            <div class="nav-brand"></div>
+            <div class="nav-controls">
                 <div class="icon-btn" onclick="toggleProfile()" title="My Profile"><i class="fa-solid fa-user"></i></div>
                 <div class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="themeIcon">☀️</span></div>
             </div>
@@ -358,8 +359,8 @@
                 <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
                 
-                <div class="profile-row" style="border-bottom: none; margin-top: 15px; justify-content: center; padding-bottom: 0;">
-                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link">
+                <div class="profile-row" style="margin-top: 2rem; justify-content: center; background: transparent; border: none; padding: 0;">
+                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link" style="width: 100%; justify-content: center; padding: 1rem; background: var(--input-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
                         <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
                     </a>
                 </div>
