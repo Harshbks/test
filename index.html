@@ -366,8 +366,8 @@
         /* ================= CONFIGURATION ================= */
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSDTbUv2kiJAkCIaI88wZV09cxZmfwSqfJH9Or1ZYULvCcI0ph0MdqcMZimxMwKhb6n6T9ZYcwnimzB/pub?output=csv";
         const STORAGE_KEY = 'kiit_user_session';
-        // ✅ UPDATED: Your Google Script URL is here
-        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbzPT_kD4ZbyL7GpmB0KlPL2JTwJNFu7UrvLCdwgvqFEd1AUb1dgyqHWTkqtM_0JHDeI/exec";
+        // ✅ UPDATED: Your New Google Script URL
+        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbwjl2IhAPmSy7OxKq-RaPYpjrXM7p-X6d_zWLS-A13JegP0z4SOHDAJdITY4Ideqmvt/exec";
         
         // GLOBAL STATE
         let loggedInUser = "";
@@ -380,7 +380,7 @@
             checkSession();
         });
 
-        // ================= AUTH FLOW (SMOOTH TRANSITIONS) =================
+        // ================= AUTH FLOW =================
 
         async function checkRollAndSendOtp() {
             const rollInput = document.getElementById('kiitRoll');
