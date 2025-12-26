@@ -426,7 +426,7 @@
         async function sendOtp(email) {
             // 1. Generate OTP Locally
             generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            console.log("OTP for debug:", generatedOtp);
+            // console.log("OTP for debug:", generatedOtp); // REMOVED FOR SECURITY
 
             const btn = document.getElementById('sendOtpBtn');
             const originalText = btn.innerHTML;
